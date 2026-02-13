@@ -1,4 +1,4 @@
-# 💓 My Heartbeat
+# ❤️ My Heartbeat
 
 **Send your heartbeat to someone you love.**
 
@@ -10,9 +10,9 @@ A beautiful, interactive Valentine's web app where you create a personalized pul
 
 ---
 
-## ✨ Features
+## Features
 
-- **Realistic heartbeat animation** — lub-DUB pulsing that mimics a real heartbeat, not just a simple scale bounce
+- **Realistic heartbeat animation** — Lub-dub pulsing that mimics a real heartbeat
 - **Tap your rhythm** — tap a button to set a custom BPM, or choose from poetic presets like *"thinking of you"* and *"when you smile"*
 - **5 curated Valentine's themes** — Rose, Blush, Burgundy, Garden, and Golden — each with matched backgrounds, glows, and accents
 - **Floating heart particles** — gentle petals drift upward for an ambient, romantic atmosphere
@@ -21,15 +21,17 @@ A beautiful, interactive Valentine's web app where you create a personalized pul
 - **Immersive Viewer Mode** — recipients see a full-screen, distraction-free heartbeat experience
 - **Mobile responsive** — controls-first layout on mobile, side-by-side on desktop
 
-## 🖼️ Screenshots
+## 2 Modes
 
 | Create Mode | Viewer Mode |
 |:-----------:|:-----------:|
 | Customize your message, rhythm, and theme | The immersive experience your recipient sees |
+|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 44 23 PM" src="https://github.com/user-attachments/assets/b9acfb89-5bbb-4718-8a56-97268bd5001a" />|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 45 04 PM" src="https://github.com/user-attachments/assets/0a678f4d-4445-4c62-9703-0655cfc548f0" />|
+
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -62,7 +64,7 @@ This outputs a static site to the `dist/` folder, ready to deploy anywhere.
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 This is a fully static app — no backend, no database, no server. Deploy it anywhere that hosts static files.
 
@@ -90,7 +92,7 @@ Follow the prompts, and you'll have a live URL in ~30 seconds.
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 my-heartbeat/
@@ -121,7 +123,7 @@ my-heartbeat/
 
 ---
 
-## 🎨 Themes
+## Themes
 
 | Theme | Vibe |
 |-------|------|
@@ -135,7 +137,7 @@ Want to add your own theme? Edit `src/lib/themes.ts` — each theme is just an o
 
 ---
 
-## 🔗 How Sharing Works
+## How Sharing Works
 
 All customization data (message, names, BPM, theme) is encoded into a **base64 hash fragment** in the URL:
 
@@ -150,7 +152,7 @@ my-heartbeat.vercel.app/#eyJtc2ciOiJJIGxvdmUgeW91...
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **[React 19](https://react.dev/)** — UI framework
 - **[TypeScript](https://www.typescriptlang.org/)** — Type safety
@@ -161,7 +163,7 @@ my-heartbeat.vercel.app/#eyJtc2ciOiJJIGxvdmUgeW91...
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to:
 
@@ -181,15 +183,15 @@ Some ideas for contributions:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
-You're free to fork, modify, and use this however you like. Just keep the love going. 💓
+You're free to fork, modify, and use this however you like. Just keep the love going <3.
 
 ---
 
-## 💌 Story
+## Story
 
 Built in a single night before Valentine's Day 2026 as a heartfelt gift for friends and family. The idea: what if you could literally send someone your heartbeat?
 
@@ -198,5 +200,5 @@ Made with love using Claude, Cursor, and a lot of coffee.
 ---
 
 <p align="center">
-  <i>Send your heartbeat to someone you love</i> 💓
+  <i>Send your heartbeat to someone you love</i> ❤️
 </p>
