@@ -148,6 +148,9 @@ export function CreateMode({ initialState }: CreateModeProps) {
                         <h1 className="text-4xl font-serif italic tracking-wide" style={{ color: theme.colors.text }}>
                             My Heartbeat
                         </h1>
+                        <p className="text-lg font-light italic" style={{ color: theme.colors.textSoft }}>
+                            Send your heartbeat to someone you love
+                        </p>
                         {recipient && (
                             <div className="text-xs font-medium tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
                                 FOR {recipient}
