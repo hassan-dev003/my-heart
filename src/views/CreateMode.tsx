@@ -4,22 +4,30 @@ import { ParticleField } from '../components/background/ParticleField';
 import type { HeartbeatState, ThemeId } from '../lib/types';
 import { THEMES, DEFAULT_THEME } from '../lib/themes';
 import { cn } from '../lib/utils';
-import { Play, Link as LinkIcon, Check } from 'lucide-react';
+import { Play, Check, Heart } from 'lucide-react';
 
 interface CreateModeProps {
     initialState?: Partial<HeartbeatState>;
 }
 
+const PRESETS = [
+    { label: "Resting", sublabel: "thinking of you", bpm: 65 },
+    { label: "Warm", sublabel: "when I see you", bpm: 85 },
+    { label: "Flutter", sublabel: "when you smile", bpm: 110 },
+    { label: "Racing", sublabel: "you take my breath away", bpm: 140 },
+];
+
 export function CreateMode({ initialState }: CreateModeProps) {
-    const [message, setMessage] = useState(initialState?.message || 'I love you');
+    const [message, setMessage] = useState(initialState?.message || '');
     const [sender, setSender] = useState(initialState?.sender || '');
     const [recipient, setRecipient] = useState(initialState?.recipient || '');
-    const [bpm, setBpm] = useState(initialState?.bpm || 60);
-    const [themeId, setThemeId] = useState<ThemeId>(initialState?.themeId || 'classic');
+    const [bpm, setBpm] = useState(initialState?.bpm || 65);
+    const [themeId, setThemeId] = useState<ThemeId>(initialState?.themeId || 'rose');
     const [copied, setCopied] = useState(false);
 
     const theme = THEMES[themeId] || DEFAULT_THEME;
 
+    // Tap Rhythm Logic
     const [lastTap, setLastTap] = useState<number>(0);
     const [tapTimes, setTapTimes] = useState<number[]>([]);
 
@@ -52,11 +60,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
         if (recipient) params.set('to', recipient);
         params.set('bpm', bpm.toString());
         params.set('theme', themeId);
-
-        // Construct the full URL
-        // In dev, it might be localhost, in prod it's the domain
-        const url = `${window.location.origin}/?${params.toString()}`;
-        return url;
+        return `${window.location.origin}/?${params.toString()}`;
     };
 
     const shareLink = async () => {
@@ -75,135 +79,172 @@ export function CreateMode({ initialState }: CreateModeProps) {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 transition-colors duration-700"
+        <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 transition-colors duration-1000 font-sans overflow-hidden"
             style={{ backgroundColor: theme.colors.bg, color: theme.colors.text }}
         >
-            <ParticleField theme={theme} />
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <ParticleField theme={theme} count={25} />
+            </div>
 
-            <div className="z-10 w-full max-w-5xl animate-fade-in-up">
+            <div className="z-10 w-full max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 relative">
 
-                <div className="text-center space-y-2 mb-8 md:mb-12">
-                    <h1 className="text-3xl md:text-4xl font-serif italic" style={{ textShadow: `0 0 10px ${theme.colors.glow}` }}>
-                        Heartbeat Visualizer
-                    </h1>
-                    <p className="text-sm opacity-80 font-light max-w-xs mx-auto md:max-w-none">Create a beating heart message for someone special.</p>
-                </div>
+                {/* Left Side: Visual Preview */}
+                <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:items-center">
+                    <div className="space-y-3 mb-12 text-center w-full flex flex-col items-center">
+                        <h1 className="text-5xl md:text-6xl font-serif italic tracking-wide" style={{ color: theme.colors.text }}>
+                            Heartbeat Visualizer
+                        </h1>
+                        <p className="text-lg font-light italic" style={{ color: theme.colors.textSoft }}>
+                            Send your heartbeat to someone you love
+                        </p>
+                    </div>
 
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center lg:items-start justify-center">
-
-                    {/* Left Column: Preview Area */}
-                    <div className="w-full lg:w-1/2 flex flex-col items-center justify-center py-6 lg:py-0 min-h-[300px]">
-                        <div className="text-sm font-medium mb-4 opacity-70 tracking-widest uppercase">
-                            {recipient ? `For ${recipient}` : 'For [Name]'}
+                    <div className="relative flex flex-col items-center w-full">
+                        {/* Wrapper for For [Name] */}
+                        <div className="mb-8 text-sm font-medium tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
+                            {recipient ? `FOR ${recipient}` : 'FOR [NAME]'}
                         </div>
 
-                        <HeartSVG bpm={bpm} theme={theme} className="w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 transition-all duration-500" />
+                        {/* Heart container */}
+                        <div className="relative transform transition-all duration-500 hover:scale-105 mb-10">
+                            <HeartSVG bpm={bpm} theme={theme} className="w-64 h-64 md:w-80 md:h-80 drop-shadow-2xl" />
+                        </div>
 
-                        <div className="mt-8 text-center space-y-2 w-full px-4">
-                            <p className="text-xl md:text-2xl font-serif leading-relaxed break-words" style={{ color: theme.colors.text }}>
+                        {/* Message */}
+                        <div className="text-center space-y-4 max-w-md px-4">
+                            <p className="text-3xl md:text-4xl font-serif italic leading-tight" style={{ color: theme.colors.text }}>
                                 {message || 'Your message here'}
                             </p>
-                            <p className="text-xs md:text-sm font-medium opacity-70 tracking-widest uppercase mt-4">
-                                {sender ? `From ${sender}` : 'From [Name]'}
+                            <p className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
+                                — {sender ? `WITH LOVE, ${sender}` : 'WITH LOVE, [NAME]'}
                             </p>
                         </div>
                     </div>
+                </div>
 
-                    {/* Right Column: Controls */}
-                    <div className="w-full lg:w-1/2 lg:max-w-md space-y-6 bg-white/5 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 shadow-xl">
+                {/* Right Side: Control Card */}
+                <div className="w-full lg:w-[480px] rounded-[2rem] p-8 md:p-10 shadow-2xl border border-white/40 backdrop-blur-md transition-colors duration-700"
+                    style={{ backgroundColor: theme.colors.cardBg }}
+                >
 
+                    {/* Message section */}
+                    <div className="space-y-8 mb-10">
                         <div className="space-y-4">
-                            <label className="text-xs uppercase tracking-wider opacity-60">Message</label>
+                            <label className="block text-xs font-bold tracking-[0.2em] uppercase opacity-60">Your Message</label>
                             <input
                                 type="text"
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                placeholder="I love you..."
-                                className="w-full bg-transparent border-b border-white/20 py-2 px-1 focus:outline-none focus:border-white/60 transition-colors text-lg font-serif"
-                                maxLength={100}
+                                placeholder="I love you 3000.."
+                                className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-2xl font-serif placeholder:opacity-40 focus:outline-none transition-colors"
+                                maxLength={80}
+                                style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
                             />
-                            <div className="flex flex-col sm:flex-row gap-4">
+                        </div>
+
+                        <div className="flex gap-8">
+                            <div className="flex-1 space-y-4">
+                                <label className="block text-xs font-bold tracking-[0.2em] uppercase opacity-60">To</label>
                                 <input
                                     type="text"
                                     value={recipient}
                                     onChange={(e) => setRecipient(e.target.value)}
-                                    placeholder="To (optional)"
-                                    className="w-full sm:w-1/2 bg-transparent border-b border-white/20 py-2 px-1 focus:outline-none focus:border-white/60 transition-colors text-sm"
+                                    placeholder="My love"
+                                    className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-lg font-serif placeholder:opacity-40 focus:outline-none transition-colors"
+                                    style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
                                 />
+                            </div>
+                            <div className="flex-1 space-y-4">
+                                <label className="block text-xs font-bold tracking-[0.2em] uppercase opacity-60">From</label>
                                 <input
                                     type="text"
                                     value={sender}
                                     onChange={(e) => setSender(e.target.value)}
-                                    placeholder="From (optional)"
-                                    className="w-full sm:w-1/2 bg-transparent border-b border-white/20 py-2 px-1 focus:outline-none focus:border-white/60 transition-colors text-sm"
+                                    placeholder="Your name"
+                                    className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-lg font-serif placeholder:opacity-40 focus:outline-none transition-colors"
+                                    style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
                                 />
                             </div>
                         </div>
-
-                        <div className="space-y-4">
-                            <label className="text-xs uppercase tracking-wider opacity-60">Heartbeat ({bpm} BPM)</label>
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                                <button
-                                    onClick={handleTap}
-                                    className="flex-1 py-3 px-4 rounded-lg bg-white/10 hover:bg-white/20 transition-all active:scale-95 border border-white/10 flex items-center justify-center gap-2 whitespace-nowrap"
-                                >
-                                    <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
-                                    Tap Rhythm
-                                </button>
-                                <input
-                                    type="range"
-                                    min="40"
-                                    max="180"
-                                    value={bpm}
-                                    onChange={(e) => setBpm(parseInt(e.target.value))}
-                                    className="flex-1 accent-white/80 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
-                                />
-                            </div>
-                            <div className="flex justify-between text-xs opacity-50 px-1">
-                                <button onClick={() => setBpm(60)} className="hover:opacity-100 p-1">Calm</button>
-                                <button onClick={() => setBpm(100)} className="hover:opacity-100 p-1">Excited</button>
-                                <button onClick={() => setBpm(140)} className="hover:opacity-100 p-1">Racing</button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-xs uppercase tracking-wider opacity-60">Theme</label>
-                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                                {Object.values(THEMES).map((t) => (
-                                    <button
-                                        key={t.id}
-                                        onClick={() => setThemeId(t.id)}
-                                        className={cn(
-                                            "w-10 h-10 md:w-12 md:h-12 rounded-full flex-shrink-0 border-2 transition-all snap-start",
-                                            themeId === t.id ? "scale-110 border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "border-transparent opacity-70 hover:opacity-100"
-                                        )}
-                                        style={{ backgroundColor: t.colors.heart }}
-                                        title={t.name}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="pt-6 flex flex-col sm:flex-row gap-3">
-                            <button
-                                onClick={openPreview}
-                                className="w-full sm:w-auto flex-1 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all font-medium flex items-center justify-center gap-2 active:scale-95"
-                            >
-                                <Play size={18} /> Preview
-                            </button>
-                            <button
-                                onClick={shareLink}
-                                className={cn(
-                                    "w-full sm:w-auto flex-[2] py-3.5 rounded-xl transition-all font-medium flex items-center justify-center gap-2 text-black shadow-lg active:scale-95",
-                                    copied ? "bg-green-400" : "bg-white hover:bg-gray-100"
-                                )}
-                            >
-                                {copied ? <Check size={20} /> : <LinkIcon size={20} />}
-                                {copied ? 'Copied Link!' : 'Create Link'}
-                            </button>
-                        </div>
-
                     </div>
+
+                    {/* Rhythm Control */}
+                    <div className="space-y-6 mb-10">
+                        <div className="flex justify-between items-baseline">
+                            <label className="block text-xs font-bold tracking-[0.2em] uppercase opacity-60">Heartbeat <span className="text-[10px] opacity-70 font-serif italic normal-case ml-1">{bpm} BPM</span></label>
+                        </div>
+
+                        <button
+                            onClick={handleTap}
+                            className="w-full py-3.5 rounded-xl border transition-all group flex items-center justify-center gap-3 hover:bg-white/50 active:scale-[0.98]"
+                            style={{ borderColor: theme.colors.heart, color: theme.colors.heart }}
+                        >
+                            <Heart size={18} className={cn("transition-transform fill-transparent", tapTimes.length > 0 && "animate-ping")} />
+                            <span className="font-serif text-lg">Tap Your Rhythm</span>
+                        </button>
+
+                        <div className="grid grid-cols-4 gap-2">
+                            {PRESETS.map((preset) => (
+                                <button
+                                    key={preset.label}
+                                    onClick={() => setBpm(preset.bpm)}
+                                    className={cn(
+                                        "py-3 px-1 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 h-20 active:scale-95",
+                                        bpm === preset.bpm
+                                            ? "text-white shadow-md transform scale-105"
+                                            : "bg-white/40 border-red-200 hover:bg-white/80 text-gray-600"
+                                    )}
+                                    style={bpm === preset.bpm ? { backgroundColor: theme.colors.heart, borderColor: theme.colors.heart } : {}}
+                                >
+                                    <span className={cn("text-[0.65rem] font-bold uppercase tracking-wider")}>{preset.label}</span>
+                                    <span className={cn("text-[0.5rem] leading-tight text-center italic font-serif px-1", bpm === preset.bpm ? "opacity-90" : "opacity-60")}>{preset.sublabel}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Theme Selection */}
+                    <div className="space-y-4 mb-10">
+                        <label className="block text-xs font-bold tracking-[0.2em] uppercase opacity-60">Theme</label>
+                        <div className="flex gap-4">
+                            {Object.values(THEMES).map((t) => (
+                                <button
+                                    key={t.id}
+                                    onClick={() => setThemeId(t.id)}
+                                    className={cn(
+                                        "w-12 h-12 rounded-full transition-all relative flex items-center justify-center",
+                                        themeId === t.id ? "scale-110 shadow-lg ring-2 ring-offset-2 ring-[#d4a574]" : "hover:scale-105 hover:opacity-80"
+                                    )}
+                                    style={{
+                                        background: `linear-gradient(135deg, ${t.colors.heart}, ${t.colors.heartLight})`
+                                    }}
+                                    title={t.name}
+                                >
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={openPreview}
+                            className="py-4 rounded-xl border text-[#d4a574] border-[#d4a574] font-serif italic text-lg flex items-center justify-center gap-2 hover:bg-[#d4a574]/10 transition-all active:scale-95"
+                        >
+                            <Play size={16} className="fill-current" /> Preview
+                        </button>
+                        <button
+                            onClick={shareLink}
+                            className="py-4 rounded-xl font-medium text-white shadow-lg transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-2"
+                            style={{
+                                background: `linear-gradient(135deg, ${theme.colors.heart}, ${theme.colors.heartLight})`
+                            }}
+                        >
+                            {copied ? <Check size={18} /> : <Heart size={18} className="fill-current" />}
+                            <span className="font-serif italic text-lg">{copied ? 'Link Copied' : 'Create Link'}</span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
