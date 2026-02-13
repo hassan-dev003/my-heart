@@ -2,26 +2,22 @@ import { useState, useEffect } from 'react';
 import { CreateMode } from './views/CreateMode';
 import { ViewerMode } from './views/ViewerMode';
 import type { HeartbeatState, ThemeId } from './lib/types';
+import { getHeartbeatDataFromUrl } from './lib/urlUtils';
 
 function App() {
   const [view, setView] = useState<'create' | 'view'>('create');
   const [initialState, setInitialState] = useState<HeartbeatState | undefined>(undefined);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const msg = params.get('msg');
-    const bpm = params.get('bpm');
-    const theme = params.get('theme');
-    const from = params.get('from');
-    const to = params.get('to');
+    const data = getHeartbeatDataFromUrl();
 
-    if (msg || bpm || theme) {
+    if (data) {
       setInitialState({
-        message: msg || 'I love you',
-        bpm: bpm ? parseInt(bpm, 10) : 60,
-        themeId: (theme as ThemeId) || 'classic',
-        sender: from || '',
-        recipient: to || '',
+        message: data.message || 'I love you',
+        bpm: data.bpm || 60,
+        themeId: (data.themeId as ThemeId) || 'rose',
+        sender: data.sender || '',
+        recipient: data.recipient || '',
       });
       setView('view');
     }

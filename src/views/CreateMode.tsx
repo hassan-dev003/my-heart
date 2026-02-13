@@ -4,6 +4,7 @@ import { ParticleField } from '../components/background/ParticleField';
 import type { HeartbeatState, ThemeId } from '../lib/types';
 import { THEMES, DEFAULT_THEME } from '../lib/themes';
 import { cn } from '../lib/utils';
+import { encodeHeartbeatData, shortenUrl } from '../lib/urlUtils';
 import { Play, Check, Heart } from 'lucide-react';
 
 interface CreateModeProps {
@@ -53,29 +54,39 @@ export function CreateMode({ initialState }: CreateModeProps) {
         setLastTap(now);
     };
 
-    const generateLink = () => {
-        const params = new URLSearchParams();
-        if (message) params.set('msg', message);
-        if (sender) params.set('from', sender);
-        if (recipient) params.set('to', recipient);
-        params.set('bpm', bpm.toString());
-        params.set('theme', themeId);
-        return `${window.location.origin}/?${params.toString()}`;
+    const [isCreatingLink, setIsCreatingLink] = useState(false);
+
+    const generateEncodedLink = () => {
+        const encoded = encodeHeartbeatData({
+            message,
+            sender,
+            recipient,
+            bpm,
+            themeId,
+        });
+        return `${window.location.origin}/#${encoded}`;
     };
 
     const shareLink = async () => {
-        const url = generateLink();
+        if (isCreatingLink) return;
+        setIsCreatingLink(true);
+
+        const longUrl = generateEncodedLink();
+        const shortUrl = await shortenUrl(longUrl);
+
         try {
-            await navigator.clipboard.writeText(url);
+            await navigator.clipboard.writeText(shortUrl);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             console.error('Failed to copy', err);
+        } finally {
+            setIsCreatingLink(false);
         }
     };
 
     const openPreview = () => {
-        window.open(generateLink(), '_blank');
+        window.open(generateEncodedLink(), '_blank');
     };
 
     return (
@@ -240,8 +251,10 @@ export function CreateMode({ initialState }: CreateModeProps) {
                                 background: `linear-gradient(135deg, ${theme.colors.heart}, ${theme.colors.heartLight})`
                             }}
                         >
-                            {copied ? <Check size={18} /> : <Heart size={18} className="fill-current" />}
-                            <span className="font-serif italic text-lg">{copied ? 'Link Copied' : 'Create Link'}</span>
+                            {copied ? <Check size={18} /> : isCreatingLink ? <div className="w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin" /> : <Heart size={18} className="fill-current" />}
+                            <span className="font-serif italic text-lg">
+                                {copied ? 'Link Copied' : isCreatingLink ? 'Creating...' : 'Create Link'}
+                            </span>
                         </button>
                     </div>
 
