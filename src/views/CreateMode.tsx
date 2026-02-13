@@ -114,7 +114,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
                         {/* Wrapper for For [Name] */}
                         {recipient && (
                             <div className="mb-8 text-sm font-medium tracking-[0.2em] uppercase animate-fade-in" style={{ color: theme.colors.textSoft }}>
-                                FOR {recipient}
+                                TO {recipient}
                             </div>
                         )}
 
@@ -153,7 +153,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
                         </p>
                         {recipient && (
                             <div className="text-xs font-medium tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
-                                FOR {recipient}
+                                TO {recipient}
                             </div>
                         )}
                         <div className="relative transform transition-all duration-500 my-2">

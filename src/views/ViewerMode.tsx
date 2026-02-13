@@ -27,7 +27,7 @@ export function ViewerMode({ state }: ViewerModeProps) {
                         className="mb-12 text-sm md:text-base font-medium tracking-[0.2em] uppercase opacity-0 animate-fade-in-delayed-1"
                         style={{ animationDelay: '1s', animationFillMode: 'forwards', color: theme.colors.textSoft }}
                     >
-                        For {recipient}
+                        To {recipient}
                     </div>
                 )}
 
