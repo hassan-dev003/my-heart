@@ -4,7 +4,7 @@ import { ParticleField } from '../components/background/ParticleField';
 import type { HeartbeatState, ThemeId } from '../lib/types';
 import { THEMES, DEFAULT_THEME } from '../lib/themes';
 import { cn } from '../lib/utils';
-import { encodeHeartbeatData, shortenUrl } from '../lib/urlUtils';
+import { encodeHeartbeatData } from '../lib/urlUtils';
 import { Play, Check, Heart } from 'lucide-react';
 
 interface CreateModeProps {
@@ -54,8 +54,6 @@ export function CreateMode({ initialState }: CreateModeProps) {
         setLastTap(now);
     };
 
-    const [isCreatingLink, setIsCreatingLink] = useState(false);
-
     const generateEncodedLink = () => {
         const encoded = encodeHeartbeatData({
             message,
@@ -68,21 +66,30 @@ export function CreateMode({ initialState }: CreateModeProps) {
     };
 
     const shareLink = async () => {
-        if (isCreatingLink) return;
-        setIsCreatingLink(true);
+        const url = generateEncodedLink();
 
-        const longUrl = generateEncodedLink();
-        const shortUrl = await shortenUrl(longUrl);
-
+        // Copy immediately (synchronous — Safari-safe)
         try {
-            await navigator.clipboard.writeText(shortUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            await navigator.clipboard.writeText(url);
         } catch (err) {
-            console.error('Failed to copy', err);
-        } finally {
-            setIsCreatingLink(false);
+            console.warn('Clipboard API failed, using fallback', err);
+            // Fallback for older browsers / strict Safari contexts
+            const textarea = document.createElement('textarea');
+            textarea.value = url;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) {
+                console.error('Fallback copy failed', e);
+            }
+            document.body.removeChild(textarea);
         }
+
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
     };
 
     const openPreview = () => {
@@ -288,9 +295,9 @@ export function CreateMode({ initialState }: CreateModeProps) {
                                     background: `linear-gradient(135deg, ${theme.colors.heart}, ${theme.colors.heartLight})`
                                 }}
                             >
-                                {copied ? <Check size={18} /> : isCreatingLink ? <div className="w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin" /> : <Heart size={18} className="fill-current" />}
+                                {copied ? <Check size={18} /> : <Heart size={18} className="fill-current" />}
                                 <span className="font-serif italic text-lg">
-                                    {copied ? 'Link Copied' : isCreatingLink ? 'Creating...' : 'Create Link'}
+                                    {copied ? 'Link Copied' : 'Create Link'}
                                 </span>
                             </button>
                         </div>

@@ -1,4 +1,5 @@
 import type { HeartbeatState, ThemeId } from './types';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
 interface HeartbeatData {
     msg?: string;
@@ -8,16 +9,25 @@ interface HeartbeatData {
     theme?: string;
 }
 
+// Short keys interface for compression
+interface CompressedData {
+    m?: string; // message
+    s?: string; // sender
+    r?: string; // recipient
+    b?: number; // bpm
+    t?: string; // themeId
+}
+
 export function encodeHeartbeatData(data: Partial<HeartbeatState>): string {
-    const minifiedData: HeartbeatData = {};
-    if (data.message) minifiedData.msg = data.message;
-    if (data.sender) minifiedData.from = data.sender;
-    if (data.recipient) minifiedData.to = data.recipient;
-    if (data.bpm) minifiedData.bpm = data.bpm;
-    if (data.themeId) minifiedData.theme = data.themeId;
+    const compact: CompressedData = {};
+    if (data.message) compact.m = data.message;
+    if (data.sender) compact.s = data.sender;
+    if (data.recipient) compact.r = data.recipient;
+    if (data.bpm) compact.b = data.bpm;
+    if (data.themeId) compact.t = data.themeId;
 
     try {
-        return btoa(JSON.stringify(minifiedData));
+        return compressToEncodedURIComponent(JSON.stringify(compact));
     } catch (e) {
         console.error('Failed to encode data', e);
         return '';
@@ -30,6 +40,24 @@ export function decodeHeartbeatData(hash: string): Partial<HeartbeatState> | nul
         const cleanHash = hash.replace(/^#/, '');
         if (!cleanHash) return null;
 
+        // 1. Try lz-string decompression (New Format)
+        try {
+            const decompressed = decompressFromEncodedURIComponent(cleanHash);
+            if (decompressed) {
+                const data: CompressedData = JSON.parse(decompressed);
+                return {
+                    message: data.m,
+                    sender: data.s,
+                    recipient: data.r,
+                    bpm: data.b,
+                    themeId: data.t as ThemeId,
+                };
+            }
+        } catch (e) {
+            // Not lz-string or failed to parse, fall through to legacy
+        }
+
+        // 2. Fallback: Legacy Base64 Format
         const decoded = atob(cleanHash);
         const data: HeartbeatData = JSON.parse(decoded);
 
@@ -47,27 +75,9 @@ export function decodeHeartbeatData(hash: string): Partial<HeartbeatState> | nul
 }
 
 export function getHeartbeatDataFromUrl(): Partial<HeartbeatState> | null {
-    // 1. Try Hash (New Secure Method)
     const hash = window.location.hash;
     if (hash && hash.length > 1) {
-        const data = decodeHeartbeatData(hash);
-        if (data) return data;
+        return decodeHeartbeatData(hash);
     }
-
-    // 2. Fallback removed as per user request
     return null;
-
-    return null;
-}
-
-export async function shortenUrl(longUrl: string): Promise<string> {
-    try {
-        const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-        if (response.ok) {
-            return await response.text();
-        }
-    } catch (e) {
-        console.warn('URL shortener failed, using long URL', e);
-    }
-    return longUrl;
 }
