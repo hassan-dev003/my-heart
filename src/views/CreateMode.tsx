@@ -37,7 +37,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
         if (now - lastTap > 2000) {
             setTapTimes([now]);
         } else {
-            const newTapTimes = [...tapTimes, now];
+            const newTapTimes = [...tapTimes, now].slice(-8); // Keep only the last 8 taps
             setTapTimes(newTapTimes);
             if (newTapTimes.length > 1) {
                 const intervals = [];

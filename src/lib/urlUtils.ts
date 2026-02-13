@@ -54,23 +54,8 @@ export function getHeartbeatDataFromUrl(): Partial<HeartbeatState> | null {
         if (data) return data;
     }
 
-    // 2. Try Query Params (Backward Compatibility)
-    const params = new URLSearchParams(window.location.search);
-    const msg = params.get('msg');
-    const bpm = params.get('bpm');
-    const theme = params.get('theme');
-    const from = params.get('from');
-    const to = params.get('to');
-
-    if (msg || bpm || theme || from || to) {
-        return {
-            message: msg || undefined,
-            bpm: bpm ? parseInt(bpm, 10) : undefined,
-            themeId: (theme as ThemeId) || undefined,
-            sender: from || undefined,
-            recipient: to || undefined,
-        };
-    }
+    // 2. Fallback removed as per user request
+    return null;
 
     return null;
 }
