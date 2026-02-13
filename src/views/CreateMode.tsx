@@ -3,7 +3,7 @@ import { HeartSVG } from '../components/heart/HeartSVG';
 import { ParticleField } from '../components/background/ParticleField';
 import type { HeartbeatState, ThemeId } from '../lib/types';
 import { THEMES, DEFAULT_THEME } from '../lib/themes';
-import { cn } from '../lib/utils';
+import { cn, isRTL } from '../lib/utils';
 import { encodeHeartbeatData } from '../lib/urlUtils';
 import { Play, Check, Heart } from 'lucide-react';
 
@@ -120,7 +120,11 @@ export function CreateMode({ initialState }: CreateModeProps) {
                     <div className="relative flex flex-col items-center w-full">
                         {/* Wrapper for For [Name] */}
                         {recipient && (
-                            <div className="mb-8 text-sm font-medium tracking-[0.2em] uppercase animate-fade-in" style={{ color: theme.colors.textSoft }}>
+                            <div
+                                className="mb-8 text-sm font-medium tracking-[0.2em] uppercase animate-fade-in"
+                                style={{ color: theme.colors.textSoft }}
+                                dir={isRTL(recipient) ? 'rtl' : 'ltr'}
+                            >
                                 TO {recipient}
                             </div>
                         )}
@@ -132,15 +136,23 @@ export function CreateMode({ initialState }: CreateModeProps) {
 
                         {/* Message */}
                         {message && (
-                            <div className="text-center space-y-4 max-w-md px-4 animate-fade-in">
-                                <p className="text-3xl md:text-4xl font-serif italic leading-tight" style={{ color: theme.colors.text }}>
+                            <div className="text-center space-y-4 max-w-md px-4 animate-fade-in w-full">
+                                <p
+                                    className="text-3xl md:text-4xl font-serif italic leading-tight break-words"
+                                    style={{ color: theme.colors.text }}
+                                    dir={isRTL(message) ? 'rtl' : 'ltr'}
+                                >
                                     {message}
                                 </p>
                             </div>
                         )}
 
                         {sender && (
-                            <p className="mt-4 text-xs font-bold tracking-[0.2em] uppercase animate-fade-in" style={{ color: theme.colors.textSoft }}>
+                            <p
+                                className="mt-4 text-xs font-bold tracking-[0.2em] uppercase animate-fade-in"
+                                style={{ color: theme.colors.textSoft }}
+                                dir={isRTL(sender) ? 'rtl' : 'ltr'}
+                            >
                                 — WITH LOVE, {sender}
                             </p>
                         )}
@@ -159,7 +171,11 @@ export function CreateMode({ initialState }: CreateModeProps) {
                             Send your heartbeat to someone you love
                         </p>
                         {recipient && (
-                            <div className="text-xs font-medium tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
+                            <div
+                                className="text-xs font-medium tracking-[0.2em] uppercase"
+                                style={{ color: theme.colors.textSoft }}
+                                dir={isRTL(recipient) ? 'rtl' : 'ltr'}
+                            >
                                 TO {recipient}
                             </div>
                         )}
@@ -167,12 +183,20 @@ export function CreateMode({ initialState }: CreateModeProps) {
                             <HeartSVG bpm={bpm} theme={theme} className="w-32 h-32 drop-shadow-xl" />
                         </div>
                         {message && (
-                            <p className="text-xl font-serif italic leading-tight px-4" style={{ color: theme.colors.text }}>
+                            <p
+                                className="text-xl font-serif italic leading-tight px-4 w-full break-words"
+                                style={{ color: theme.colors.text }}
+                                dir={isRTL(message) ? 'rtl' : 'ltr'}
+                            >
                                 {message}
                             </p>
                         )}
                         {sender && (
-                            <p className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
+                            <p
+                                className="text-[10px] font-bold tracking-[0.2em] uppercase"
+                                style={{ color: theme.colors.textSoft }}
+                                dir={isRTL(sender) ? 'rtl' : 'ltr'}
+                            >
                                 — {sender}
                             </p>
                         )}
@@ -194,6 +218,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
                                     className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-2xl font-serif placeholder:opacity-40 focus:outline-none transition-colors"
                                     maxLength={80}
                                     style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
+                                    dir="auto"
                                 />
                             </div>
 
@@ -207,6 +232,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
                                         placeholder="My love"
                                         className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-lg font-serif placeholder:opacity-40 focus:outline-none transition-colors"
                                         style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
+                                        dir="auto"
                                     />
                                 </div>
                                 <div className="flex-1 space-y-4">
@@ -218,6 +244,7 @@ export function CreateMode({ initialState }: CreateModeProps) {
                                         placeholder="Your name"
                                         className="w-full bg-transparent border-b border-gray-300 focus:border-gray-800 py-2 text-lg font-serif placeholder:opacity-40 focus:outline-none transition-colors"
                                         style={{ color: theme.colors.text, borderColor: theme.colors.accent }}
+                                        dir="auto"
                                     />
                                 </div>
                             </div>

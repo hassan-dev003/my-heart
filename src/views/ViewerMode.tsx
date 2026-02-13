@@ -3,6 +3,7 @@ import { ParticleField } from '../components/background/ParticleField';
 import type { HeartbeatState } from '../lib/types';
 import { THEMES, DEFAULT_THEME } from '../lib/themes';
 import { Heart } from 'lucide-react';
+import { isRTL } from '../lib/utils';
 
 interface ViewerModeProps {
     state: HeartbeatState;
@@ -26,6 +27,7 @@ export function ViewerMode({ state }: ViewerModeProps) {
                     <div
                         className="mb-12 text-sm md:text-base font-medium tracking-[0.2em] uppercase opacity-0 animate-fade-in-delayed-1"
                         style={{ animationDelay: '1s', animationFillMode: 'forwards', color: theme.colors.textSoft }}
+                        dir={isRTL(recipient) ? 'rtl' : 'ltr'}
                     >
                         To {recipient}
                     </div>
@@ -38,12 +40,13 @@ export function ViewerMode({ state }: ViewerModeProps) {
 
                 {/* Message */}
                 <div
-                    className="max-w-3xl opacity-0 animate-fade-in-up-delayed px-4"
+                    className="max-w-3xl opacity-0 animate-fade-in-up-delayed px-4 w-full"
                     style={{ animationDelay: '2s', animationFillMode: 'forwards' }}
                 >
                     <h1
                         className="text-4xl md:text-5xl lg:text-7xl font-serif italic leading-tight break-words tracking-wide"
                         style={{ textShadow: `0 0 30px ${theme.colors.glow}` }}
+                        dir={isRTL(message) ? 'rtl' : 'ltr'}
                     >
                         {message}
                     </h1>
@@ -52,7 +55,11 @@ export function ViewerMode({ state }: ViewerModeProps) {
                     {sender && (
                         <div className="mt-12 flex items-center justify-center gap-2 opacity-70">
                             <div className="h-px w-8 bg-current opacity-50"></div>
-                            <p className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase" style={{ color: theme.colors.textSoft }}>
+                            <p
+                                className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase"
+                                style={{ color: theme.colors.textSoft }}
+                                dir={isRTL(sender) ? 'rtl' : 'ltr'}
+                            >
                                 With Love, {sender}
                             </p>
                             <div className="h-px w-8 bg-current opacity-50"></div>

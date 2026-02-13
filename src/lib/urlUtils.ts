@@ -37,24 +37,19 @@ export function encodeHeartbeatData(data: Partial<HeartbeatState>): string {
 }
 
 export function decodeHeartbeatData(hash: string): Partial<HeartbeatState> | null {
-    console.log('[Debug] Decoding hash:', hash);
     try {
         // Remove leading # if present
         const cleanHash = hash.replace(/^#/, '');
         if (!cleanHash) {
-            console.log('[Debug] Empty hash after cleaning');
             return null;
         }
 
         // 1. Try lz-string decompression (New Format)
         try {
-            console.log('[Debug] Attempting lz-string decompression...');
             const decompressed = decompressFromEncodedURIComponent(cleanHash);
-            console.log('[Debug] Decompressed result:', decompressed);
 
             if (decompressed) {
                 const data: CompressedData = JSON.parse(decompressed);
-                console.log('[Debug] Parsed compressed data:', data);
                 return {
                     message: data.m,
                     sender: data.s,
@@ -64,15 +59,17 @@ export function decodeHeartbeatData(hash: string): Partial<HeartbeatState> | nul
                 };
             }
         } catch (e) {
-            console.log('[Debug] lz-string decompression/parsing failed:', e);
             // Not lz-string or failed to parse, fall through to legacy
         }
 
         // 2. Fallback: Legacy Base64 Format
-        console.log('[Debug] Falling back to legacy base64 decoding...');
-        const decoded = atob(cleanHash);
+        // Fix for Unicode characters in base64
+        const decoded = decodeURIComponent(
+            Array.from(atob(cleanHash))
+                .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+                .join('')
+        );
         const data: HeartbeatData = JSON.parse(decoded);
-        console.log('[Debug] Parsed legacy data:', data);
 
         return {
             message: data.msg,
