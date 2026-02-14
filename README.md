@@ -16,8 +16,8 @@ A beautiful, interactive Valentine's web app where you create a personalized pul
 - **Tap your rhythm** — tap a button to set a custom BPM, or choose from poetic presets like *"thinking of you"* and *"when you smile"*
 - **5 curated Valentine's themes** — Rose, Blush, Burgundy, Garden, and Golden — each with matched backgrounds, glows, and accents
 - **Floating heart particles** — gentle petals drift upward for an ambient, romantic atmosphere
-- **Shareable links** — all customization is encoded in the URL (base64 hash), no backend needed
-- **URL shortening** — auto-shortens links via TinyURL for clean sharing
+- **Shareable links** — all customization is compressed and encoded in the URL, no backend needed
+- **Multilingual & RTL support** — works in any language including Arabic, Chinese, Urdu, Russian, and all right-to-left scripts
 - **Immersive Viewer Mode** — recipients see a full-screen, distraction-free heartbeat experience
 - **Mobile responsive** — controls-first layout on mobile, side-by-side on desktop
 
@@ -26,7 +26,7 @@ A beautiful, interactive Valentine's web app where you create a personalized pul
 | Create Mode | Viewer Mode |
 |:-----------:|:-----------:|
 | Customize your message, rhythm, and theme | The immersive experience your recipient sees |
-|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 44 23 PM" src="https://github.com/user-attachments/assets/b9acfb89-5bbb-4718-8a56-97268bd5001a" />|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 45 04 PM" src="https://github.com/user-attachments/assets/0a678f4d-4445-4c62-9703-0655cfc548f0" />|
+|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 44 23 PM" src="https://github.com/user-attachments/assets/b9acfb89-5bbb-4718-8a56-97268bd5001a" />|<img width="1440" height="809" alt="Screenshot 2026-02-13 at 5 45 04 PM" src="https://github.com/user-attachments/assets/0a678f4d-4445-4c62-9703-0655cfc548f0" />|
 
 
 ---
@@ -42,7 +42,7 @@ A beautiful, interactive Valentine's web app where you create a personalized pul
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/my-heartbeat.git
+git clone https://github.com/hassan-dev003/my-heartbeat.git
 cd my-heartbeat
 
 # Install dependencies
@@ -107,8 +107,8 @@ my-heartbeat/
 │   ├── lib/
 │   │   ├── themes.ts              # Color theme definitions
 │   │   ├── types.ts               # TypeScript interfaces
-│   │   ├── urlUtils.ts            # Base64 URL encoding/decoding
-│   │   └── utils.ts               # Shared utilities
+│   │   ├── urlUtils.ts            # lz-string URL compression/decompression
+│   │   └── utils.ts               # Shared utilities (RTL detection, etc.)
 │   ├── views/
 │   │   ├── CreateMode.tsx         # Editor / customization UI
 │   │   └── ViewerMode.tsx         # Immersive recipient view
@@ -139,15 +139,15 @@ Want to add your own theme? Edit `src/lib/themes.ts` — each theme is just an o
 
 ## How Sharing Works
 
-All customization data (message, names, BPM, theme) is encoded into a **base64 hash fragment** in the URL:
+All customization data (message, names, BPM, theme) is compressed using **lz-string** and encoded into a URL hash fragment:
 
 ```
-my-heartbeat.vercel.app/#eyJtc2ciOiJJIGxvdmUgeW91...
+my-heartbeat.vercel.app/#NoIgpgTgrgDAzgCwJYBcA2B7AJhA
 ```
 
 - No backend or database needed
+- Compressed with lz-string for short, clean URLs
 - The recipient can't read the message from the URL (no spoilers!)
-- Links are auto-shortened via TinyURL for clean sharing
 - Works offline once loaded
 
 ---
@@ -160,6 +160,7 @@ my-heartbeat.vercel.app/#eyJtc2ciOiJJIGxvdmUgeW91...
 - **[Tailwind CSS 4](https://tailwindcss.com/)** — Utility-first styling
 - **[Framer Motion](https://www.framer.com/motion/)** — Animations
 - **[Lucide React](https://lucide.dev/)** — Icons
+- **[lz-string](https://github.com/pieroxy/lz-string)** — URL-safe data compression
 
 ---
 
@@ -174,11 +175,10 @@ Contributions are welcome! Feel free to:
 5. **Open a Pull Request**
 
 Some ideas for contributions:
-- New themes
+- New themes or seasonal variants
 - Sound effects (optional heartbeat audio)
 - Download as GIF
 - Haptic feedback on mobile
-- Internationalization (i18n)
 - Accessibility improvements
 
 ---
